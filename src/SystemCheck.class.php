@@ -172,7 +172,7 @@ class SystemCheck {
      * @param string $neededVersion
      * @return bool
      */
-    public static function compareVersion(string $systemVersion, string $neededVersion) {
+    public static function compareVersion($systemVersion, $neededVersion) {
         return !version_compare($systemVersion, $neededVersion, "<");
     }
 
@@ -182,7 +182,7 @@ class SystemCheck {
      * @param string $extension
      * @return bool
      */
-    public static function isExtensionLoaded(string $extension) {
+    public static function isExtensionLoaded($extension) {
         return extension_loaded($extension);
     }
 
