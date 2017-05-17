@@ -46,10 +46,7 @@ class SystemCheck {
      */
     public static function whichPHP() {
 
-        $path = exec("which php"); // MacOS / Linux machines
-        if(!$path) {
-            $path = getenv('PHPBIN');
-        }
+        $path = getenv('PHPBIN');
         if(!$path) {
             $path = filter_input(INPUT_SERVER, "_", FILTER_SANITIZE_STRING);
         }
@@ -61,6 +58,10 @@ class SystemCheck {
         }
         if(!$path) {
             $path = PHP_BINDIR;
+        }
+        if(!$path) {
+            // MacOS and Linux OS (checks the CLI PHP binary)
+            $path = exec("which php");
         }
 
         if(!file_exists($path)) {
