@@ -17,6 +17,8 @@ define("OPENSSL_REQUIRED", true);
 define("PDO_REQUIRED", true);
 define("MYSQLI_REQUIRED", false);
 define("IMAGICK_REQUIRED", false);
+define("ICONV_REQUIRED", true);
+define("JSON_REQUIRED", true);
 
 // database connection data
 define("DB_USERNAME", "");
@@ -123,10 +125,61 @@ define("DB_HOST", "localhost");
                 <td><?php echo ($SystemCheck::isExtensionLoaded("mysqli") || !MYSQLI_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
             </tr>
             <tr>
+                <td>iconv</td>
+                <td><?php echo ($SystemCheck::isExtensionLoaded("iconv") ? 'Installed' : 'Not installed'); ?></td>
+                <td><?php echo ($SystemCheck::isExtensionLoaded("iconv") || !ICONV_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
+            </tr>
+            <tr>
+                <td>JSON</td>
+                <td><?php echo ($SystemCheck::isExtensionLoaded("JSON") ? 'Installed' : 'Not installed'); ?></td>
+                <td><?php echo ($SystemCheck::isExtensionLoaded("JSON") || !JSON_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
+            </tr>
+            <tr>
                 <td>Imagick</td>
                 <td><?php echo ($SystemCheck::isExtensionLoaded("imagick") ? 'Installed' : 'Not installed'); ?></td>
                 <td><?php echo ($SystemCheck::isExtensionLoaded("imagick") || !IMAGICK_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
             </tr>
+
+            <tr>
+                <td colspan="3"><h2>Details</h2></td>
+            </tr>
+            <tr>
+                <td>Server port</td>
+                <td colspan="2"><?php echo $SystemCheck::serverPort(); ?></td>
+            </tr>
+            <tr>
+                <td>PHP path</td>
+                <td colspan="2"><?php echo $SystemCheck::whichPHP(); ?></td>
+            </tr>
+
+            <tr>
+                <td colspan="3"><h2>Core</h2></td>
+            </tr>
+
+            <?php
+            $core = [
+                "allow_url_fopen",
+                "allow_url_include",
+                "default_charset",
+                "file_uploads",
+
+                // errors
+                "display_errors",
+                "display_startup_errors",
+                "error_log",
+                "log_errors",
+
+                // date
+                "date.timezone",
+                ];
+
+            foreach($core as $directive) { ?>
+                <tr>
+                    <td><?php echo $directive; ?></td>
+                    <td colspan="2"><?php echo $SystemCheck::getCore($directive); ?></td>
+                </tr>
+            <?php } ?>
+
         </table>
 
     </body>
