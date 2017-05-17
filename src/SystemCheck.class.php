@@ -15,6 +15,63 @@ class SystemCheck {
 
 
     /**
+     * Returns the port of the server
+     * @return string
+     */
+    public static function serverPort() {
+        return filter_input(INPUT_SERVER, "SERVER_PORT", FILTER_SANITIZE_STRING);
+    }
+
+
+    /**
+     * Returns the core settings
+     * @param string $directive Directive
+     * @return string
+     */
+    public static function getCore($directive) {
+        $value = ini_get($directive);
+
+        if($value == 1) {
+            return "On";
+        } elseif($value == "" || (!$value && $value != 0)) {
+            return '<i style="font-size:small;">no value</i>';
+        }
+        return $value;
+    }
+
+
+    /**
+     * Returns the path of the PHP executable - if available
+     * @return string
+     */
+    public static function whichPHP() {
+
+        $path = exec("which php"); // MacOS / Linux machines
+        if(!$path) {
+            $path = getenv('PHPBIN');
+        }
+        if(!$path) {
+            $path = filter_input(INPUT_SERVER, "_", FILTER_SANITIZE_STRING);
+        }
+        if(!$path) {
+            $path = $_SERVER["PHPRC"];
+        }
+        if(!$path) {
+            $path = $_SERVER["PHP_PEAR_SYSCONF_DIR"];
+        }
+        if(!$path) {
+            $path = PHP_BINDIR;
+        }
+
+        if(!file_exists($path)) {
+            $path = "Unknown";
+        }
+
+        return $path;
+    }
+
+
+    /**
      * Returns the client-side MySQL version
      * @return string
      */
