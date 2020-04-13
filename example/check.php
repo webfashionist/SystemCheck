@@ -27,160 +27,161 @@ define("DB_HOST", "localhost");
 
 
 ?><!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Check system environment</title>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Check system environment</title>
 
-        <style>
-            * {
-                margin:0;
-                padding:0;
-                -webkit-box-sizing:border-box;
-                -moz-box-sizing:border-box;
-                box-sizing:border-box;
-            }
-            body {
-                background-color:#EFEFEF;
-                font-family: Calibri,Verdana,Helvetica,sans-serif;
-            }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
 
-            h2 {
-                margin:10px 0;
-                color:#2980b9;
-            }
+        body {
+            background-color: #EFEFEF;
+            font-family: Calibri, Verdana, Helvetica, sans-serif;
+        }
 
-            table {
-                margin:20px auto;
-                border:none;
-                width:400px;
-                max-width:100%;
-            }
+        h2 {
+            margin: 10px 0;
+            color: #2980b9;
+        }
 
-            table td {
-                padding:10px;
-                border-bottom:#FAFAFA solid 1px;
-                color:#333;
-            }
-        </style>
-    </head>
-    <body>
+        table {
+            margin: 20px auto;
+            border: none;
+            width: 400px;
+            max-width: 100%;
+        }
 
-        <table>
-            <tr>
-                <td colspan="3"><h2>Server</h2></td>
-            </tr>
+        table td {
+            padding: 10px;
+            border-bottom: #FAFAFA solid 1px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
 
-
-            <tr>
-                <td>Apache</td>
-                <td><?php echo $SystemCheck::getApacheVersion(); ?></td>
-                <td><?php echo ($SystemCheck::compareVersion($SystemCheck::getApacheVersion(), APACHE_REQUIRED) ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
-            </tr>
-            <tr>
-                <td>Nginx</td>
-                <td><?php echo $SystemCheck::getNginxVersion(); ?></td>
-                <td><?php echo ($SystemCheck::compareVersion($SystemCheck::getNginxVersion(), NGINX_REQUIRED) ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
-            </tr>
-            <tr>
-                <td>IIS</td>
-                <td><?php echo $SystemCheck::getIISVersion(); ?></td>
-                <td><?php echo ($SystemCheck::compareVersion($SystemCheck::getIISVersion(), IIS_REQUIRED) ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
-            </tr>
-
-            <tr>
-                <td>PHP</td>
-                <td><?php echo $SystemCheck::getPHPversion(); ?></td>
-                <td><?php echo ($SystemCheck::compareVersion($SystemCheck::getPHPversion(), PHP_REQUIRED) ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
-            </tr>
-            <tr>
-                <td>MySQL (client)</td>
-                <td><?php echo $SystemCheck::getMySQLClientVersion(); ?></td>
-                <td><?php echo ($SystemCheck::compareVersion($SystemCheck::getMySQLClientVersion(), MYSQL_REQUIRED) ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
-            </tr>
-            <tr>
-                <td>MySQL (server)</td>
-                <td><?php echo $SystemCheck::getMySQLServerVersion(DB_HOST, DB_USERNAME, DB_PASSWORD); ?></td>
-                <td><?php echo ($SystemCheck::compareVersion($SystemCheck::getMySQLServerVersion(DB_HOST, DB_USERNAME, DB_PASSWORD), MYSQL_SERVER_REQUIRED) ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
-            </tr>
+<table>
+    <tr>
+        <td colspan="3"><h2>Server</h2></td>
+    </tr>
 
 
-            <tr>
-                <td colspan="3"><h2>Extensions</h2></td>
-            </tr>
+    <tr>
+        <td>Apache</td>
+        <td><?php echo $SystemCheck::getApacheVersion(); ?></td>
+        <td><?php echo($SystemCheck::compareVersion($SystemCheck::getApacheVersion(), APACHE_REQUIRED) ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
+    </tr>
+    <tr>
+        <td>Nginx</td>
+        <td><?php echo $SystemCheck::getNginxVersion(); ?></td>
+        <td><?php echo($SystemCheck::compareVersion($SystemCheck::getNginxVersion(), NGINX_REQUIRED) ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
+    </tr>
+    <tr>
+        <td>IIS</td>
+        <td><?php echo $SystemCheck::getIISVersion(); ?></td>
+        <td><?php echo($SystemCheck::compareVersion($SystemCheck::getIISVersion(), IIS_REQUIRED) ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
+    </tr>
 
-            <tr>
-                <td>OpenSSL</td>
-                <td><?php echo ($SystemCheck::isExtensionLoaded("OpenSSL") ? 'Installed' : 'Not installed'); ?></td>
-                <td><?php echo ($SystemCheck::isExtensionLoaded("OpenSSL") || !OPENSSL_REQUIRED? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
-            </tr>
-            <tr>
-                <td>PDO</td>
-                <td><?php echo ($SystemCheck::isExtensionLoaded("pdo") ? 'Installed' : 'Not installed'); ?></td>
-                <td><?php echo ($SystemCheck::isExtensionLoaded("pdo") || !PDO_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
-            </tr>
-            <tr>
-                <td>MySQLi</td>
-                <td><?php echo ($SystemCheck::isExtensionLoaded("mysqli") ? 'Installed' : 'Not installed'); ?></td>
-                <td><?php echo ($SystemCheck::isExtensionLoaded("mysqli") || !MYSQLI_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
-            </tr>
-            <tr>
-                <td>iconv</td>
-                <td><?php echo ($SystemCheck::isExtensionLoaded("iconv") ? 'Installed' : 'Not installed'); ?></td>
-                <td><?php echo ($SystemCheck::isExtensionLoaded("iconv") || !ICONV_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
-            </tr>
-            <tr>
-                <td>JSON</td>
-                <td><?php echo ($SystemCheck::isExtensionLoaded("JSON") ? 'Installed' : 'Not installed'); ?></td>
-                <td><?php echo ($SystemCheck::isExtensionLoaded("JSON") || !JSON_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
-            </tr>
-            <tr>
-                <td>Imagick</td>
-                <td><?php echo ($SystemCheck::isExtensionLoaded("imagick") ? 'Installed' : 'Not installed'); ?></td>
-                <td><?php echo ($SystemCheck::isExtensionLoaded("imagick") || !IMAGICK_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
-            </tr>
+    <tr>
+        <td>PHP</td>
+        <td><?php echo $SystemCheck::getPHPversion(); ?></td>
+        <td><?php echo($SystemCheck::compareVersion($SystemCheck::getPHPversion(), PHP_REQUIRED) ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
+    </tr>
+    <tr>
+        <td>MySQL (client)</td>
+        <td><?php echo $SystemCheck::getMySQLClientVersion(); ?></td>
+        <td><?php echo($SystemCheck::compareVersion($SystemCheck::getMySQLClientVersion(), MYSQL_REQUIRED) ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
+    </tr>
+    <tr>
+        <td>MySQL (server)</td>
+        <td><?php echo $SystemCheck::getMySQLServerVersion(DB_HOST, DB_USERNAME, DB_PASSWORD); ?></td>
+        <td><?php echo($SystemCheck::compareVersion($SystemCheck::getMySQLServerVersion(DB_HOST, DB_USERNAME, DB_PASSWORD), MYSQL_SERVER_REQUIRED) ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
+    </tr>
 
-            <tr>
-                <td colspan="3"><h2>Details</h2></td>
-            </tr>
-            <tr>
-                <td>Server port</td>
-                <td colspan="2"><?php echo $SystemCheck::serverPort(); ?></td>
-            </tr>
-            <tr>
-                <td>PHP path</td>
-                <td colspan="2"><?php echo $SystemCheck::whichPHP(); ?></td>
-            </tr>
 
-            <tr>
-                <td colspan="3"><h2>Core</h2></td>
-            </tr>
+    <tr>
+        <td colspan="3"><h2>Extensions</h2></td>
+    </tr>
 
-            <?php
-            $core = [
-                "allow_url_fopen",
-                "allow_url_include",
-                "default_charset",
-                "file_uploads",
+    <tr>
+        <td>OpenSSL</td>
+        <td><?php echo($SystemCheck::isExtensionLoaded("OpenSSL") ? 'Installed' : 'Not installed'); ?></td>
+        <td><?php echo($SystemCheck::isExtensionLoaded("OpenSSL") || !OPENSSL_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
+    </tr>
+    <tr>
+        <td>PDO</td>
+        <td><?php echo($SystemCheck::isExtensionLoaded("pdo") ? 'Installed' : 'Not installed'); ?></td>
+        <td><?php echo($SystemCheck::isExtensionLoaded("pdo") || !PDO_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
+    </tr>
+    <tr>
+        <td>MySQLi</td>
+        <td><?php echo($SystemCheck::isExtensionLoaded("mysqli") ? 'Installed' : 'Not installed'); ?></td>
+        <td><?php echo($SystemCheck::isExtensionLoaded("mysqli") || !MYSQLI_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
+    </tr>
+    <tr>
+        <td>iconv</td>
+        <td><?php echo($SystemCheck::isExtensionLoaded("iconv") ? 'Installed' : 'Not installed'); ?></td>
+        <td><?php echo($SystemCheck::isExtensionLoaded("iconv") || !ICONV_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
+    </tr>
+    <tr>
+        <td>JSON</td>
+        <td><?php echo($SystemCheck::isExtensionLoaded("JSON") ? 'Installed' : 'Not installed'); ?></td>
+        <td><?php echo($SystemCheck::isExtensionLoaded("JSON") || !JSON_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
+    </tr>
+    <tr>
+        <td>Imagick</td>
+        <td><?php echo($SystemCheck::isExtensionLoaded("imagick") ? 'Installed' : 'Not installed'); ?></td>
+        <td><?php echo($SystemCheck::isExtensionLoaded("imagick") || !IMAGICK_REQUIRED ? '<span style="color:green;">OK</span>' : '<span style="color:red;">NOT OK</span>'); ?></td>
+    </tr>
 
-                // errors
-                "display_errors",
-                "display_startup_errors",
-                "error_log",
-                "log_errors",
+    <tr>
+        <td colspan="3"><h2>Details</h2></td>
+    </tr>
+    <tr>
+        <td>Server port</td>
+        <td colspan="2"><?php echo $SystemCheck::serverPort(); ?></td>
+    </tr>
+    <tr>
+        <td>PHP path</td>
+        <td colspan="2"><?php echo $SystemCheck::whichPHP(); ?></td>
+    </tr>
 
-                // date
-                "date.timezone",
-                ];
+    <tr>
+        <td colspan="3"><h2>Core</h2></td>
+    </tr>
 
-            foreach($core as $directive) { ?>
-                <tr>
-                    <td><?php echo $directive; ?></td>
-                    <td colspan="2"><?php echo $SystemCheck::getCore($directive); ?></td>
-                </tr>
-            <?php } ?>
+    <?php
+    $core = [
+        "allow_url_fopen",
+        "allow_url_include",
+        "default_charset",
+        "file_uploads",
 
-        </table>
+        // errors
+        "display_errors",
+        "display_startup_errors",
+        "error_log",
+        "log_errors",
 
-    </body>
+        // date
+        "date.timezone",
+    ];
+
+    foreach ($core as $directive) { ?>
+        <tr>
+            <td><?php echo $directive; ?></td>
+            <td colspan="2"><?php echo $SystemCheck::getCore($directive); ?></td>
+        </tr>
+    <?php } ?>
+
+</table>
+
+</body>
 </html>

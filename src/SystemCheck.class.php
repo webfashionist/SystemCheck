@@ -1,15 +1,24 @@
 <?php
+
 namespace webfashionist;
 
+use mysqli_sql_exception;
+use PDO;
+use PDOException;
 
-class SystemCheck {
-
+/**
+ * Class SystemCheck
+ * @package webfashionist
+ */
+class SystemCheck
+{
 
     /**
      * Returns the current PHP version
      * @return string
      */
-    public static function getPHPversion() {
+    public static function getPHPversion(): string
+    {
         return phpversion();
     }
 
@@ -18,8 +27,9 @@ class SystemCheck {
      * Returns the port of the server
      * @return string
      */
-    public static function serverPort() {
-        return filter_input(INPUT_SERVER, "SERVER_PORT", FILTER_SANITIZE_STRING);
+    public static function serverPort()
+    {
+        return self::filter_server("SERVER_PORT", FILTER_SANITIZE_STRING);
     }
 
 
@@ -28,12 +38,14 @@ class SystemCheck {
      * @param string $directive Directive
      * @return string
      */
-    public static function getCore($directive) {
+    public static function getCore($directive)
+    {
         $value = ini_get($directive);
 
-        if($value == 1) {
+        if ($value == 1) {
             return "On";
-        } elseif($value == "" || (!$value && $value != 0)) {
+        }
+        if ($value == "" || (!$value && $value != 0)) {
             return '<i style="font-size:small;">no value</i>';
         }
         return $value;
@@ -44,27 +56,24 @@ class SystemCheck {
      * Returns the path of the PHP executable - if available
      * @return string
      */
-    public static function whichPHP() {
+    public static function whichPHP()
+    {
+        $paths = [
+            getenv('PHPBIN'),
+            self::filter_server('_', FILTER_SANITIZE_STRING),
+            self::filter_server('PHPRC', FILTER_SANITIZE_STRING),
+            self::filter_server('PHP_PEAR_SYSCONF_DIR', FILTER_SANITIZE_STRING),
+            PHP_BINDIR,
+            exec("which php"), // MacOS and Linux OS (checks the CLI PHP binary)
+        ];
 
-        $path = getenv('PHPBIN');
-        if(!$path) {
-            $path = filter_input(INPUT_SERVER, "_", FILTER_SANITIZE_STRING);
-        }
-        if(!$path) {
-            $path = $_SERVER["PHPRC"];
-        }
-        if(!$path) {
-            $path = $_SERVER["PHP_PEAR_SYSCONF_DIR"];
-        }
-        if(!$path) {
-            $path = PHP_BINDIR;
-        }
-        if(!$path) {
-            // MacOS and Linux OS (checks the CLI PHP binary)
-            $path = exec("which php");
+        foreach($paths as $path) {
+            if($path) {
+                break;
+            }
         }
 
-        if(!file_exists($path)) {
+        if (!file_exists($path)) {
             $path = "Unknown";
         }
 
@@ -76,20 +85,20 @@ class SystemCheck {
      * Returns the client-side MySQL version
      * @return string
      */
-    public static function getMySQLClientVersion() {
-
-        if(function_exists("shell_exec")) {
+    public static function getMySQLClientVersion()
+    {
+        if (function_exists("shell_exec")) {
             $version = shell_exec("mysql -v");
-            if($version) {
+            if ($version) {
                 return $version;
             }
         }
         $version = mysqli_get_client_version();
-        if($version) {
+        if ($version) {
             // reformat version number
-            $mainVersion = floor ( $version / 10000 );
-            $minorVersion = floor ( $version / 100 ) - ( $mainVersion * 100 );
-            $subVersion = $version - ( $mainVersion * 10000 ) - ( $minorVersion * 100 );
+            $mainVersion = floor($version / 10000);
+            $minorVersion = floor($version / 100) - ($mainVersion * 100);
+            $subVersion = $version - ($mainVersion * 10000) - ($minorVersion * 100);
             return $mainVersion . "." . $minorVersion . "." . $subVersion;
         }
         return "Unknown";
@@ -103,41 +112,41 @@ class SystemCheck {
      * @param string $password Password
      * @return string array|string
      */
-    public static function getMySQLServerVersion($host, $user, $password) {
-
+    public static function getMySQLServerVersion($host, $user, $password)
+    {
         // save occured errors
         $error = [];
 
-        if(self::isExtensionLoaded("PDO")) {
+        if (self::isExtensionLoaded("PDO")) {
             // connect with PDO - preferred method here but needs a database name for the connection
 
             try {
                 // connect to database
-                $pdo = new \PDO("mysql:host=" . $host, $user, $password);
-                $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-                $pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_OBJ);
+                $pdo = new PDO("mysql:host=" . $host, $user, $password);
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
                 // fetch version
                 $version = $pdo->getAttribute(constant("PDO::ATTR_SERVER_VERSION"));
                 // close connection
                 unset($pdo);
 
-                if($version) {
+                if ($version) {
                     // reformat version number
                     $explode = explode("-", $version);
                     return $explode[0];
                 }
-            } catch(\PDOException $exception) {
+            } catch (PDOException $exception) {
                 // PDO error occured
                 $error[] = "<b>PDO</b>: " . $exception->getMessage();
             }
         }
 
-        if(self::isExtensionLoaded("mysqli")) {
+        if (self::isExtensionLoaded("mysqli")) {
             // connect with MySQLi
             try {
                 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
                 $mysqli = new \mysqli($host, $user, $password);
-                if(mysqli_connect_errno()) {
+                if (mysqli_connect_errno()) {
                     // MySQLi error occured
                     $error[] = mysqli_connect_error();
                 } else {
@@ -154,7 +163,7 @@ class SystemCheck {
                         return $mainVersion . "." . $minorVersion . "." . $subVersion;
                     }
                 }
-            } catch (\mysqli_sql_exception $exception) {
+            } catch (mysqli_sql_exception $exception) {
                 // MySQLi error occured
                 $error[] = "<b>MySQLi</b>: " . $exception->getMessage();
             }
@@ -170,13 +179,13 @@ class SystemCheck {
      * Returns the IIS (Internet Information Services) version
      * @return string
      */
-    public static function getIISVersion() {
-
+    public static function getIISVersion()
+    {
         $command = 'powershell "get-itemproperty HKLM:\SOFTWARE\Microsoft\InetStp\ | select setupstring,versionstring"';
 
-        if(function_exists("exec")) {
+        if (function_exists("exec")) {
             $version = exec($command);
-            if($version) {
+            if ($version) {
                 return $version;
             }
         }
@@ -188,11 +197,11 @@ class SystemCheck {
      * Returns the Nginx version
      * @return string
      */
-    public static function getNginxVersion() {
-
-        if(function_exists("shell_exec")) {
+    public static function getNginxVersion()
+    {
+        if (function_exists("shell_exec")) {
             $version = shell_exec("nginx -V");
-            if($version) {
+            if ($version) {
                 // match only the Apache version from output
                 preg_match("/nginx\/([\.0-9]+)/i", $version, $match);
                 if (isset($match[1]) && $match[1]) {
@@ -208,13 +217,13 @@ class SystemCheck {
      * Returns the Apache version
      * @return string
      */
-    public static function getApacheVersion() {
-
-        if(function_exists("apache_get_version")) {
+    public static function getApacheVersion()
+    {
+        if (function_exists("apache_get_version")) {
             $version = apache_get_version();
-            if($version) {
+            if ($version) {
                 // match only the Apache version from output
-                preg_match("/Apache\/([\.0-9]+)/i", $version, $match);
+                preg_match("/Apache\/([.0-9]+)/i", $version, $match);
                 if (isset($match[1]) && $match[1]) {
                     return $match[1];
                 }
@@ -230,7 +239,8 @@ class SystemCheck {
      * @param string $neededVersion
      * @return bool
      */
-    public static function compareVersion($systemVersion, $neededVersion) {
+    public static function compareVersion($systemVersion, $neededVersion)
+    {
         return !version_compare($systemVersion, $neededVersion, "<");
     }
 
@@ -240,9 +250,22 @@ class SystemCheck {
      * @param string $extension
      * @return bool
      */
-    public static function isExtensionLoaded($extension) {
+    public static function isExtensionLoaded($extension)
+    {
         return extension_loaded($extension);
     }
 
+    /**
+     * @param string $key
+     * @param int $filter
+     * @return mixed|null
+     */
+    private static function filter_server(string $key, int $filter = FILTER_SANITIZE_STRING)
+    {
+        if(!isset($_SERVER[$key])) {
+            return null;
+        }
+        return filter_var($_SERVER[$key], $filter);
+    }
 
 }
